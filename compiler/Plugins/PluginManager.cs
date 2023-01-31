@@ -17,7 +17,11 @@ namespace Ink
                 {
                     foreach (Type type in Assembly.LoadFile(Path.GetFullPath(file)).GetExportedTypes())
                     {
-                        if (typeof(IPlugin).IsAssignableFrom(type))
+                        if (typeof(IPlugin).IsAssignableFrom(type)
+                            && type.GetConstructor(new Type[0]) != null
+                            && !type.IsGenericTypeDefinition
+                            && !type.IsAbstract
+                            && !type.IsInterface)
                         {
                             _plugins.Add((IPlugin)Activator.CreateInstance(type));
                         }
@@ -26,40 +30,34 @@ namespace Ink
             }
         }
 
-		public string PreParse(string storyContent)
-		{
-			object[] args = new object[] { storyContent };
-
-            foreach (var plugin in _plugins) 
+        public string PreParse(string storyContent)
+        {
+            foreach (IPlugin plugin in _plugins)
             {
-                typeof(IPlugin).InvokeMember("PreParse", BindingFlags.InvokeMethod, null, plugin, args);
+                plugin.PreParse(ref storyContent);
             }
 
-			return (string)args[0];
-		}
+            return storyContent;
+        }
 
         public Parsed.Story PostParse(Parsed.Story parsedStory)
         {
-            object[] args = new object[] { parsedStory };
-
-            foreach (var plugin in _plugins) 
+            foreach (IPlugin plugin in _plugins)
             {
-                typeof(IPlugin).InvokeMember("PostParse", BindingFlags.InvokeMethod, null, plugin, args);
+                plugin.PostParse(ref parsedStory);
             }
 
-			return (Parsed.Story)args[0];
+            return parsedStory;
         }
 
         public Runtime.Story PostExport(Parsed.Story parsedStory, Runtime.Story runtimeStory)
         {
-            object[] args = new object[] { parsedStory, runtimeStory };
-
-            foreach (var plugin in _plugins) 
+            foreach (IPlugin plugin in _plugins)
             {
-                typeof(IPlugin).InvokeMember("PostExport", BindingFlags.InvokeMethod, null, plugin, args);
+                plugin.PostExport(parsedStory, ref runtimeStory);
             }
 
-			return (Runtime.Story)args[1];
+            return runtimeStory;
         }
 
         List<IPlugin> _plugins;
