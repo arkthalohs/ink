@@ -306,6 +306,10 @@ namespace Ink
 
 			opts = new Options();
             pluginDirectories = new List<string> ();
+            if (Directory.Exists("./Plugins"))
+            {
+                pluginDirectories.Add(Path.GetFullPath("./Plugins"));
+            }
 
             bool nextArgIsOutputFilename = false;
             bool nextArgIsPluginDirectory = false;
