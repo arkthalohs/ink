@@ -30,31 +30,31 @@ namespace Ink
             }
         }
 
-        public string PreParse(string storyContent)
+        public string PreParse(string storyContent, ErrorHandler externalErrorHandler = null)
         {
             foreach (IPlugin plugin in _plugins)
             {
-                plugin.PreParse(ref storyContent);
+                plugin.PreParse(ref storyContent, externalErrorHandler);
             }
 
             return storyContent;
         }
 
-        public Parsed.Story PostParse(Parsed.Story parsedStory)
+        public Parsed.Story PostParse(Parsed.Story parsedStory, ErrorHandler externalErrorHandler = null)
         {
             foreach (IPlugin plugin in _plugins)
             {
-                plugin.PostParse(ref parsedStory);
+                plugin.PostParse(ref parsedStory, externalErrorHandler);
             }
 
             return parsedStory;
         }
 
-        public Runtime.Story PostExport(Parsed.Story parsedStory, Runtime.Story runtimeStory)
+        public Runtime.Story PostExport(Parsed.Story parsedStory, Runtime.Story runtimeStory, ErrorHandler externalErrorHandler = null)
         {
             foreach (IPlugin plugin in _plugins)
             {
-                plugin.PostExport(parsedStory, ref runtimeStory);
+                plugin.PostExport(parsedStory, ref runtimeStory, externalErrorHandler);
             }
 
             return runtimeStory;

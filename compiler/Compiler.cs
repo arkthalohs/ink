@@ -39,12 +39,12 @@ namespace Ink
         public Runtime.Story Compile ()
         {
             if( _pluginManager != null )
-                _inputString = _pluginManager.PreParse(_inputString);
+                _inputString = _pluginManager.PreParse(_inputString, OnParseError);
 
             Parse();
 
             if( _pluginManager != null )
-                _parsedStory = _pluginManager.PostParse(_parsedStory);
+                _parsedStory = _pluginManager.PostParse(_parsedStory, OnParseError);
 
             if (_parsedStory != null && !_hadParseError) {
 
@@ -53,7 +53,7 @@ namespace Ink
                 _runtimeStory = _parsedStory.ExportRuntime (_options.errorHandler);
 
                 if( _pluginManager != null )
-                    _runtimeStory = _pluginManager.PostExport (_parsedStory, _runtimeStory);
+                    _runtimeStory = _pluginManager.PostExport (_parsedStory, _runtimeStory, _options.errorHandler);
             } else {
                 _runtimeStory = null;
             }
